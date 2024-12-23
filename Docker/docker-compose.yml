@@ -1,0 +1,31 @@
+version: '3.4'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=yash@123
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+
+  your-app:
+    build: .
+    container_name: dotnet_app
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=skinet;User Id=sa;Password=yash@123;TrustServerCertificate=true
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  sqlserver_data:
